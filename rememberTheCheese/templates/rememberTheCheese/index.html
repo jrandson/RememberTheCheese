@@ -1,0 +1,19 @@
+<h2>Create a new task</h2>
+<form action="#" method="post">
+	{% csrf_token %}
+	<label >Add new subtask </label><br />
+	<input type="text" name="description" id="choice{{ forloop.counter }}" value="" />
+	    
+	<input type="submit" value="Add" />
+</form>
+
+<h2> These are your tasks </h2>
+{% if tasks %}
+    <ul>
+    {% for task in tasks %}
+        <li><a href="{% url 'detail' task.id %}">{{ task.description }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No tasks are available.</p>
+{% endif %}
