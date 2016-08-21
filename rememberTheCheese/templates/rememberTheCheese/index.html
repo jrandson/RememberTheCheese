@@ -1,8 +1,17 @@
+<a href="{% url 'subtasks_for_today' %}"> Today</a>
+<a href="#"> Tomorrow</a>
+<form action="{% url 'index' %}" method="post">
+    {% csrf_token%}
+    <input type="text" name="search" placeholder="Make a search">
+    <input type="submit" value="Go">
+</form>
+
 <h2>Create a new task</h2>
-<form action="#" method="post">
+
+<form action="{% url 'create_task' %}" method="post">
 	{% csrf_token %}
-	<label >Add new subtask </label><br />
-	<input type="text" name="description" id="choice{{ forloop.counter }}" value="" />
+	<label >Add new task </label><br />
+	<input type="text" name="task_description"  value="" />
 	    
 	<input type="submit" value="Add" />
 </form>
@@ -11,7 +20,7 @@
 {% if tasks %}
     <ul>
     {% for task in tasks %}
-        <li><a href="{% url 'detail' task.id %}">{{ task.description }}</a></li>
+        <li><a href="{% url 'detail_task' task.id %}">{{ task.description }}</a></li>
     {% endfor %}
     </ul>
 {% else %}
