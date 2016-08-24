@@ -1,12 +1,21 @@
+
+from django.conf import settings
 from django.conf.urls import url
+from django.contrib import admin
+from django.conf.urls.static import static
 
 from . import views
+
+from .views import (
+     index,
+    )
 
 
 urlpatterns = [
     #tasks
 
-    url(r'^$', views.index, name='index'),
+    url(r'^$', index, name='index'),
+    url(r'^teste/$', views.teste),
     url(r'^subtasks_for_today/$', views.subtasks_for_today, name='subtasks_for_today'),
 
     #tasks
@@ -24,9 +33,9 @@ urlpatterns = [
     # ex: rememberTheCheese/5/subtasks
     url(r'^detail_subTask/(?P<subTask_id>[0-9]+)/subTask/$',views.detail_subTask, name='detail_subTask'),
     url(r'^create_subtask/(?P<task_id>[0-9]+)/$',views.create_subtask, name='create_subtask'),
-    url(r'^delete_subTask/(?P<subtask_id>[0-9]+)/$',views.delete_subTask,name='delete_subTask'),
+
     url(r'^edit/(?P<subtask_id>[0-9]+)/$',views.edit,name='edit'),
-    url(r'^detail_sbTask/(?P<subTask_id>[0-9]+)/delete_subTask/$',views.delete_subTask,name='delete_subTask'),
+    url(r'^detail_subTask/(?P<subTask_id>[0-9]+)/delete_subTask/$',views.delete_subTask,name='delete_subTask'),
     url(r'^mark_subtask_as_finished/$',views.mark_subtask_as_finished,name='mark_subtask_as_finished'),
 ]
 

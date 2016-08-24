@@ -1,45 +1,51 @@
-<a href="#">Edit</a>
-<a href="{% url 'delete_task' task.id %}">Delete</a>
-<h2>{{ task.description }}</h2>
+{% extends "rememberTheCheese/base.html" %}
+
+{% block content %}
 
 
-{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+	<a href="#">Edit</a>
+	<a href="{% url 'delete_task' task.id %}">Delete</a>
+	<h2>{{ task.description }}</h2>
 
-<form action="{% url 'create_subtask' task.id %}" method="post">
-{% csrf_token %}
-<label >Add new subtask </label><br/>
-<input type="text" name="description" id="choice{{ forloop.counter }}" value="" />
-    
-<input type="submit" value="Add" />
-</form>
+	{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
-<form action="{% url 'mark_subtask_as_finished' %}" method="post">
+	<form action="{% url 'create_subtask' task.id %}" method="post">
 	{% csrf_token %}
-	<input type="hidden" name="task_id" value="{{ task.id}}">
-	{% for subtask in task.get_subtasks_unfinished %}
-		<p>		
-			<h3><input type="checkbox" name="subtasks" value="{{subtask.id}}">{{subtask.description}}</h3>
-			<b>Deadline</b>	: {{subtask.get_deadline}}<br>
-	    	<a href="{% url 'delete_subTask' subtask.id %}">Delete</a>
-	    	<a href="#">Update</a>
-	    	<a href="{% url 'detail_subTask' subtask.id %}">More Details</a>
-    	</p>
-	{% endfor %}
+	<label >Add new subtask </label><br/>
+	<input type="text" name="description" id="choice{{ forloop.counter }}" value="" />
+	    
+	<input type="submit" value="Add" />
+	</form>
 
-	
+	<form action="{% url 'mark_subtask_as_finished' %}" method="post">
+		{% csrf_token %}
+		<input type="hidden" name="task_id" value="{{ task.id}}">
+		{% for subtask in task.get_subtasks_unfinished %}
+			<p>		
+				<h3><input type="checkbox" name="subtasks" value="{{subtask.id}}">{{subtask.description}}</h3>
+				<b>Deadline</b>	: {{subtask.get_deadline}}<br>
+		    	<a href="{% url 'delete_subTask' subtask.id %}">Delete</a>
+		    	<a href="#">Update</a>
+		    	<a href="{% url 'detail_subTask' subtask.id %}">More Details</a>
+	    	</p>
+		{% endfor %}
+
+		
+		<p>
+			<input type="submit" value="Mask selected items as completed">
+		</p>
+	</form>
+
 	<p>
-		<input type="submit" value="Mask selected items as completed">
+		<a href="{% url 'index' %}">Back</a>
 	</p>
-</form>
 
-<p>
-	<a href="{% url 'index' %}">Back</a>
-</p>
+	<h3>Subtasks finished</h3>
 
-<h3>Subtasks finished</h3>
+	<ul>
+		{% for subtask in task.get_subtask_finished %}
+			<li>{{ subtask.description }}</li>
+		{% endfor %}
+	</ul>
 
-<ul>
-	{% for subtask in task.get_subtask_finished %}
-		<li>{{ subtask.description }}</li>
-	{% endfor %}
-</ul>
+{% endblock content%}

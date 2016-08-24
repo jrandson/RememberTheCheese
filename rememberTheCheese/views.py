@@ -11,13 +11,21 @@ from django.utils import timezone
 
 # Create your views here.
 
+def teste(request):
+
+	response = "teste"
+	task = Task.objects.get(pk=4)
+
+	return HttpResponse(task.get_pct_finished())
+
 def index(request):
-	
+
+
 	taskModel = Task()
 	if 'search' in request.POST.keys() and request.POST['search'] != '':
 		tasks = taskModel.search(request.POST['search'])
 	else:
-		tasks = Task.objects.all()
+		tasks = Task.objects.all()[:10]
 
 	context = {
 		'tasks' : tasks
@@ -84,13 +92,15 @@ def create_subtask(request, task_id):
 			'error_message' : "subtask description could'nt be blank",
 			})
 
-def delete_subTask(request, subtask_id):
+def delete_subTask(request, subTask_id):
 
-	subtask = get_object_or_404(SubTask, pk=subtask_id)
+	subtask = get_object_or_404(SubTask, pk=subTask_id)
 	task_id = subtask.task.id
 	subtask.delete()
 
-	return redirect('detail', task_id = task_id)
+	return HttpResponseRedirect(reverse('detail_task', args = (task_id,)))
+
+
 
 def edit(request, id_subtask):
 	pass
