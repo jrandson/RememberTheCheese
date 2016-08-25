@@ -1,0 +1,16 @@
+{% extends "rememberTheCheese/base.html" %}
+
+{% block content %}    
+
+    {{ block.super }}
+
+<form action="{% url 'create_task' %}" method="post">
+    {% csrf_token %}
+    <label >Add new task </label><br />
+    {{ form.as_p }}
+   
+        
+    <input type="submit" value="Add" class="btn btn-primary" />
+</form>
+
+{% endblock content %}

@@ -19,12 +19,15 @@ def label_date(date):
 
 	return date
 
+
+
+
 class Task(models.Model):
 	description = models.CharField(max_length=500)
-	date_create = models.DateTimeField('date created', default=timezone.now())
 	deadline = models.DateTimeField('deadline', default=timezone.now()+ datetime.timedelta(days=3))
 	finished = models.IntegerField(default=0)
-
+	created_at = models.DateTimeField(auto_now_add=True, editable=False)
+	modified_at = models.DateTimeField(auto_now=True, editable=False)
 	def __str__(self):
 		return self.description
 
@@ -67,9 +70,11 @@ class Task(models.Model):
 class SubTask(models.Model):
 	"""docstring for subtasks"""
 	task = models.ForeignKey(Task, on_delete = models.CASCADE)
-	description = models.CharField(max_length=500)
+	description = models.CharField(max_length=100)
 	deadline = models.DateTimeField('deadline', default=timezone.now() + datetime.timedelta(days=3))
 	finished = models.IntegerField(default=0)
+	created_at = models.DateTimeField(auto_now_add=True, editable=False)
+	modified_at = models.DateTimeField(auto_now=True, editable=False)
 
 	def __str__(self):
 		return self.description

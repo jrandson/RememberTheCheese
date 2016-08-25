@@ -21,6 +21,7 @@ urlpatterns = [
     #tasks
     url(r'^create_task/$',views.create_task, name='create_task'),
     url(r'^detail_task/(?P<task_id>[0-9]+)/delete_task/$',views.delete_task,name='delete_task'),
+    url(r'^update_task/(?P<task_id>[0-9]+)/$',views.update_task,name='update_task'),
     # ex: rememberTheCheese/5/
     url(r'^get_task/(?P<task_list_id>[0-9]+)/$',views.get_task, name='get_task'),
     url(r'^detail_task/(?P<task_id>[0-9]+)/$', views.detail_task, name='detail_task'), 
@@ -39,3 +40,6 @@ urlpatterns = [
     url(r'^mark_subtask_as_finished/$',views.mark_subtask_as_finished,name='mark_subtask_as_finished'),
 ]
 
+
+if settings.DEBUG :
+    urlpatterns += static(settings.STATIC_URL, document_root = settings.STATIC_ROOT)

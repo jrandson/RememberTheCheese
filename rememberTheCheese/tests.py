@@ -12,5 +12,8 @@ from .models import Task,SubTask
 class TaskMethodTest(TestCase):
 
 	def test_description_should_not_be_blank(self):
-		task = Task(description = "")
-		self.assertEqual(task.save(), False)
+		task = Task()
+		task.save()
+		self.assertEqual(None, task.description)
+
+

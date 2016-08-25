@@ -1,49 +1,71 @@
 {% extends "rememberTheCheese/base.html" %}
 {% block head_title %} {{ instance.title }} | {{ block.super }} {% endblock head_title %}
 
-    <h1>Hi there</h1>
 
 {% block content %}    
 
     {{ block.super }}
-    <div class="container col-sm-8 col-sm-offset-3">    
-        <form action="{% url 'index' %}" method="post">
-            {% csrf_token%}
-            <input type="text" name="search" placeholder="Make a search">
-            <input type="submit" value="Go">
-        </form>
 
-        <h2>Create a new task</h2>
-
-        <form action="{% url 'create_task' %}" method="post">
-            {% csrf_token %}
-            <label >Add new task </label><br />
-            <input type="text" name="task_description"  value="" />
-                
-            <input type="submit" value="Add" />
-        </form>
-
-        <h2> These are your tasks </h2>
-        {% if tasks %}
-            <ul>
-            {% for task in tasks %}
-
-                {% if not task.description == 'Inbox' %}
-                    <p>
-                        <h4>{{ task.description }}</h4>
-                        <a href="{% url 'detail_task' task.id %}">view</a> <a href="{% url 'delete_task' task.id %}">Delete</a> <br>
-                        <strong>DDL:</strong>{{task.get_deadline}} <br>
-                        {{task.get_pct_finished}}% finished            
-                    </p>
-                    <br>--------
-                {% else %}
-                    <h2> Tasks avulças aqui </h2>
-                {% endif%}
-            {% endfor %}
-            </ul>
-        {% else %}
-            <p>No tasks are available.</p>
-        {% endif %}
+    <div class="jumbotron">
+        <h1>Remember the Cheese</h1>
+        <p>Never forget to do something again</p>
+        <p><a class="btn btn-primary btn-lg" href="{% url 'create_task' %}" role="button">New Task</a></p>
     </div>
+          
+
+    {% if tasks %}
+        <ul>
+        {% for task in tasks %}
+
+            {% if not task.description == 'Inbox' %}
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><strong>{{ task.description }}</strong></h3>
+                </div>
+                <div class="panel-body">
+                    
+                    <div class="row">
+                    <div class="col-xs-6 col-md-4"></div>
+                    <div class="col-xs-6 col-md-6"><small><strong>DDL: </strong>{{task.get_deadline}}</small></div>
+                    <div class="col-xs-6 col-md-2">
+                 
+                        <!-- Single button -->
+                        <div class="btn-group">
+                          <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Action <span class="caret"></span>
+                          </button>
+                          <ul class="dropdown-menu">
+                            <li><a href="{% url 'detail_task' task.id %}">view</a> </li>
+                            <li><a href="{% url 'delete_task' task.id %}">Update</a> </li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="{% url 'delete_task' task.id %}">Delete</a> </li>
+                          </ul>
+                        </div>
+                    </div>                  
+                </div>
+
+                    {{task.get_pct_finished}}% finished 
+                    <div class="progress">
+                      <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100" style="width: {{task.get_pct_finished}}%">
+                        <span class="sr-only">40% Complete (success)</span>
+                      </div>
+                    </div> 
+                </div>
+            </div>
+                
+            {% else %}
+                <h2> Tasks avulças aqui </h2>
+            {% endif%}
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No tasks are available.</p>
+    {% endif %}
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
 
 {% endblock content %}
+

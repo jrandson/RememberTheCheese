@@ -6,8 +6,11 @@ from rememberTheCheese.models import Task,SubTask
 from django.shortcuts import render, get_object_or_404,redirect
 from django.core.urlresolvers import reverse
 from django.views import generic
+from django.contrib import messages
 
 from django.utils import timezone
+
+from .forms import CreateTask
 
 # Create your views here.
 
@@ -20,7 +23,6 @@ def teste(request):
 
 def index(request):
 
-
 	taskModel = Task()
 	if 'search' in request.POST.keys() and request.POST['search'] != '':
 		tasks = taskModel.search(request.POST['search'])
@@ -28,7 +30,8 @@ def index(request):
 		tasks = Task.objects.all()[:10]
 
 	context = {
-		'tasks' : tasks
+		'tasks' : tasks,	
+		'form' :  CreateTask(request.POST or None)
 	}
 
 	#template = loader.get_template('rememberTheCheese/index.html')
@@ -43,16 +46,45 @@ def subtasks_for_today(request):
 	}
 
 	return render(request,'rememberTheCheese/subtasks_for_today.html',context)
+
+
 #=================tasks=======================================
 
 def create_task(request):
 	
-	desc = request.POST['task_description']
+	form = CreateTask(request.POST or None)
 
-	task = Task(description= desc)
-	task.save()
+	context = {
+		'form' : form
+	}
 
-	return redirect('index')
+	if form.is_valid():
+		desc = request.POST['description']
+		task = Task(description= desc)
+		task.save()
+
+		messages.success(request,'Successfully created')
+		return redirect('index')
+
+	return render(request, 'rememberTheCheese/create_task.html',context)
+
+
+def update_task(request, task_id=None):
+	task = get_object_or_404(Task, id=task_id)
+	form = CreateTask(request.POST or None, instance=task)
+	if form.is_valid():
+		desc = request.POST['description']
+		task = Task(description= desc)
+		task.save()
+
+		messages.success(request,'Successfully created')
+
+	context = {
+		'description' : task.description,
+		'form' : form
+	}
+
+	return render(request, 'rememberTheCheese/update_task.html',context)
 
 def detail_task(request, task_id):
 	response = "These are your tasks"
@@ -103,10 +135,11 @@ def delete_subTask(request, subTask_id):
 
 
 def edit(request, id_subtask):
-	pass
+	passs	
 
-def update(request):
-	pass
+
+
+
 
 
 def get_task(request, task_list_id):
