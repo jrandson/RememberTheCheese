@@ -16,17 +16,18 @@ urlpatterns = [
 
     url(r'^$', index, name='index'),
     url(r'^teste/$', views.teste),
+    url(r'^today/$', views.get_tasks_for_today, name='get_task_for_today'),
     url(r'^subtasks_for_today/$', views.subtasks_for_today, name='subtasks_for_today'),
 
     #tasks
     url(r'^create_task/$',views.create_task, name='create_task'),
-    url(r'^detail_task/(?P<task_id>[0-9]+)/delete_task/$',views.delete_task,name='delete_task'),
-    url(r'^update_task/(?P<task_id>[0-9]+)/$',views.update_task,name='update_task'),
+    url(r'^update_task/(?P<task_id>[0-9]+)/$',views.update_task, name='update_task'),
+    url(r'^detail_task/(?P<task_id>[0-9]+)/delete_task/$',views.delete_task,name='delete_task'),    
+    url(r'^close_task/(?P<task_id>[0-9]+)/$',views.close_task,name='close_task'),
     # ex: rememberTheCheese/5/
     url(r'^get_task/(?P<task_list_id>[0-9]+)/$',views.get_task, name='get_task'),
-    url(r'^detail_task/(?P<task_id>[0-9]+)/$', views.detail_task, name='detail_task'), 
-
-
+    url(r'^detail_task/(?P<task_id>[0-9]+)/$', views.detail_task, name='detail_task'),  
+    url(r'^undo_finished_subtasks/$', views.undo_finished_subtasks, name='undo_finished_subtasks'), 
 
 
     #subtasks   

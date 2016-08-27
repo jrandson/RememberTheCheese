@@ -4,22 +4,30 @@ from django.db import models
 from django.utils import timezone
 import datetime
 
+import math
+
 # Create your models here.
 
-def label_date(date):
+def label_date(deadline):
 
-	if date == timezone.now():
+	if deadline.date() == timezone.now().date():
 		return 'Today'
 
-	if date == timezone.now() + datetime.timedelta(days=1):
+	if deadline.date() == (timezone.now() + datetime.timedelta(days=1)).date():
 		return 'Tomorrow'
 
-	if date == timezone.now() - datetime.timedelta(days=1):
+	if deadline.date() == (timezone.now() - datetime.timedelta(days=1)).date():
 		return 'Yesterday'
 
-	return date
+	dt = (deadline.date() - timezone.now().date()).days
 
+	if abs(dt) < 3:
+		if dt < 0:
+			return str(abs(dt)) + " days ago"
+		else:
+			return "In " + str(abs(dt)) + " days"
 
+	return deadline
 
 
 class Task(models.Model):
@@ -28,9 +36,11 @@ class Task(models.Model):
 	finished = models.IntegerField(default=0)
 	created_at = models.DateTimeField(auto_now_add=True, editable=False)
 	modified_at = models.DateTimeField(auto_now=True, editable=False)
+	closed = models.IntegerField(default = 0)
+
+
 	def __str__(self):
 		return self.description
-
 
 	def get_all_subtasks(self):
 		subtask = SubTask()
@@ -41,14 +51,17 @@ class Task(models.Model):
 	def get_deadline(self):
 		return label_date(self.deadline)
 
-	def get_subtasks_unfinished(self):
-		return self.subtask_set.filter(finished=0)
+	def get_unfinished_subtasks(self):
+		return self.subtask_set.filter(finished=0).order_by('-created_at')
 
-	def get_subtask_finished(self):
-		return self.subtask_set.filter(finished=1)
+	def get_finished_subtasks(self):
+		return self.subtask_set.filter(finished=1, task_id = self.id).order_by('-modified_at')
+
+	def get_closed_tasks(self):
+		return Task.objects.filter(closed=1).order_by('-modified_at')
 
 	def get_subtasks_for_today(self):
-		query = SubTask.objects.filter(finished=0)
+		query = SubTask.objects.filter(finished=0).order_by('-created_at')
 		subtasks = []
 		for subtask in query:
 			subtasks.append(subtask)
@@ -62,10 +75,32 @@ class Task(models.Model):
 
 	def get_pct_finished(self):
 
-		all_tasks = Task.objects.all().count()
+		all_tasks = self.subtask_set.all().count()
 		finished_tasks = self.subtask_set.filter(finished=1).count()
 
-		return 100.0*finished_tasks/all_tasks;
+		return round(100.0*finished_tasks/all_tasks);
+
+	def get_qtd_subtasks(self):
+		return self.subtask_set.all().count()
+
+	def get_task_inbox(self):
+
+		tasks = Task.objects.filter(closed = 0).order_by('-created_at')
+
+		return tasks
+
+	def get_tasks_for_today(self):
+
+		subtasks = SubTask.objects.filter(finished = 0).order_by('-created_at')
+
+		tasks_for_today = []
+
+		for subtask in subtasks:
+			if subtask.deadline.date() == timezone.now().date() and  not subtask.task in tasks_for_today:
+				tasks_for_today.append(subtask.task)
+
+		return tasks_for_today
+
 
 class SubTask(models.Model):
 	"""docstring for subtasks"""
@@ -112,6 +147,8 @@ SELECT * FROM blog_entry WHERE pub_date <= '2006-01-01';
 # b.entry_set is a Manager that returns QuerySets.
 >>> b.entry_set.filter(headline__contains='Lennon')
 >>> b.entry_set.count()
+
+q.choice_set.all()
 '''
 
 

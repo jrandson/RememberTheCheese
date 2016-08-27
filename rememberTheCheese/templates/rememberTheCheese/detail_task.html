@@ -2,58 +2,88 @@
 
 {% block content %}
 
-
-	<a href="#">Edit</a>
-	<a href="{% url 'delete_task' task.id %}">Delete</a>
 	<h2>{{ task.description }}</h2>
 
 	{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
 	<form action="{% url 'create_subtask' task.id %}" method="post">
 	{% csrf_token %}		
-		<div class="form-group">
-	    	<label for="">New Subtask</label>
-	    	<input type="text" name="description" class="form-control" id="" placeholder="Email">
-	  	</div>	
-	    
-		<button type="submit" class="btn btn-primary">Add</button>
+		{{ form.as_p }}	
+	    <div class="form-group">
+			<button type="submit" class="btn btn-primary">Add</button>
+		</div>
 	</form>
-
 
 	<form action="{% url 'mark_subtask_as_finished' %}" method="post">
 		{% csrf_token %}
 		<input type="hidden" name="task_id" value="{{ task.id}}">
 		
-		{% for subtask in task.get_subtasks_unfinished %}
+		{% for subtask in unfinished_subtasks %}
 
 	    	<div class="panel panel-default">
 			  <div class="panel-heading">
-			    <h3 class="panel-title"><input type="checkbox" name="subtasks" value="{{subtask.id}}" >{{subtask.description}}</h3>
-			  </div>
-			  <div class="panel-body">
-			    <b>Deadline</b>	: {{subtask.get_deadline}}
-			    <a href="{% url 'delete_subTask' subtask.id %}">Delete</a>
-		    	<a href="#">Update</a>
-		    	<a href="{% url 'detail_subTask' subtask.id %}">More Details</a>
-			  </div>
+			    <h4 class="panel-title">
+			    	<div class="checkbox">
+						<label>
+						  	<input type="checkbox" name="subtasks" value="{{ subtask.id }}"> 
+						  	{{subtask.description}}
+						</label>
+					</div>
+			    	</h4>
+			    </div>
+				<div class="panel-body">
+					<div class="row">
+						<div class="col-xs-6 col-md-4">
+							<b>Deadline</b>	: {{subtask.get_deadline}}
+						</div>						
+					</div>
+					
+
+					<div class="row">						
+						<div class="col-xs-6 col-md-4">
+							<a href="{% url 'delete_subTask' subtask.id %}">Delete</a>
+					    	<a href="#">Update</a>
+					    	<a href="{% url 'detail_subTask' subtask.id %}">More Details</a>
+						</div>						
+					</div>
+				</div>
+				
 			</div>
 		{% endfor %}
-
-
-
 		
-		<p>
-			<input type="submit" value="Mask selected items as completed">
-		</p>
+		<button type="submit" class="btn btn-primary">
+			<span class="glyphicon glyphicon-check" aria-hidden="true"></span>
+			Mask selected items as completed
+		</button>			
 	</form>
 
+	<br>
 
-	<h3>Subtasks finished</h3>
+	<form action="{% url 'undo_finished_subtasks' %}" method="post">
+	{% csrf_token %}
+		<div class="panel panel-info">
+		<!-- Default panel contents -->
+		<div class="panel-heading"><h2>Finished Subtasks</h2> </div>
+		
+			<!-- List group -->
+			<ul class="list-group">
+				{% for subtask in finished_subtasks %}
+					
+					<li class="list-group-item" >
+						<label>
+						  	<input type="checkbox" name="finished_subtasks" value="{{ subtask.id }}"> 
+						  	<s>{{ subtask.description }}</s>						  	
+						</label>
+						<p>
+							finished at {{subtask.modified_at}}
+						</p>
+						
+					</li>
+				{% endfor %}
+			</ul>
+		</div>
 
-	<ul>
-		{% for subtask in task.get_subtask_finished %}
-			<li>{{ subtask.description }}</li>
-		{% endfor %}
-	</ul>
+		<button type="submit" class="btn btn-primary">Undo selected finished subtasks</button>
+	</form>
 
 {% endblock content%}

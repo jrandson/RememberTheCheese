@@ -10,7 +10,7 @@ from django.contrib import messages
 
 from django.utils import timezone
 
-from .forms import CreateTask
+from .forms import TaskForm, SubTaskForm
 
 # Create your views here.
 
@@ -23,15 +23,20 @@ def teste(request):
 
 def index(request):
 
+	if request.user.is_authenticated():
+		title = "Hello %s" % (request.user)
+
 	taskModel = Task()
+
 	if 'search' in request.POST.keys() and request.POST['search'] != '':
 		tasks = taskModel.search(request.POST['search'])
 	else:
-		tasks = Task.objects.all()[:10]
+		tasks = taskModel.get_task_inbox()[:10]
 
 	context = {
-		'tasks' : tasks,	
-		'form' :  CreateTask(request.POST or None)
+		'tasks' : tasks,
+		'tasks_inbox' : taskModel.get_task_inbox(),
+		'form' :  TaskForm(request.POST or None)
 	}
 
 	#template = loader.get_template('rememberTheCheese/index.html')
@@ -47,12 +52,11 @@ def subtasks_for_today(request):
 
 	return render(request,'rememberTheCheese/subtasks_for_today.html',context)
 
-
 #=================tasks=======================================
 
 def create_task(request):
 	
-	form = CreateTask(request.POST or None)
+	form = TaskForm(request.POST or None)
 
 	context = {
 		'form' : form
@@ -68,31 +72,46 @@ def create_task(request):
 
 	return render(request, 'rememberTheCheese/create_task.html',context)
 
-
 def update_task(request, task_id=None):
+	
 	task = get_object_or_404(Task, id=task_id)
-	form = CreateTask(request.POST or None, instance=task)
-	if form.is_valid():
-		desc = request.POST['description']
-		task = Task(description= desc)
-		task.save()
+	form = TaskForm(request.POST or None, instance = task)
 
-		messages.success(request,'Successfully created')
+	if form.is_valid():
+		instance = form.save(commit=False)
+		instance.save()		
+
+		messages.success(request,'Task updated successfully')
+
+		return redirect('index')	
 
 	context = {
-		'description' : task.description,
+		'task' : task,
 		'form' : form
 	}
 
 	return render(request, 'rememberTheCheese/update_task.html',context)
 
+def close_task(request, task_id):	
+
+	task = Task.objects.get(pk = task_id)
+	task. closed = 1
+	task.save()
+
+	return redirect('index')
+
 def detail_task(request, task_id):
 	response = "These are your tasks"
+
 	# get_list_or_404() 
 	task = get_object_or_404(Task, pk=task_id)
 	
+	form = SubTaskForm(request.POST or None)
 	context = {
-		'task' : task
+		'task' : task,
+		'form': form,
+		'finished_subtasks': task.get_finished_subtasks(),
+		'unfinished_subtasks' : task.get_unfinished_subtasks()
 	}
 
 	return render(request,'rememberTheCheese/detail_task.html',context)
@@ -103,26 +122,58 @@ def delete_task(request,task_id):
 
 	return redirect('index')
 
+def get_tasks_for_today(request):
+
+	task = Task()
+
+	context = {
+		'tasks': task.get_tasks_for_today()
+	}
+
+
+	return render(request,'rememberTheCheese/tasks_for_today.html',context)
+
+def undo_finished_subtasks(request):
+
+	if request.method == 'POST' and request.POST.getlist('finished_subtasks'):
+		finished_subtasks = request.POST.getlist('finished_subtasks')
+		
+		for subTask_id in finished_subtasks:
+			subtask = get_object_or_404(SubTask, pk=subTask_id)
+			subtask.finished = 0
+			subtask.save()
+
+			task_id = subtask.task_id
+
+		return HttpResponseRedirect(reverse('detail_task', args = (task_id,)))
+
+	return redirect('index')
+
+
 
 #====================subtasks=======================================
-
 
 def create_subtask(request, task_id):
 	task = get_object_or_404(Task, pk = task_id)
 
-	try:
-		subtask = SubTask()
-		subtask.description = request.POST['description']
-		subtask.task = task
-		subtask.save()
+	
+	form = SubTaskForm(request.POST or None)
 
-		return HttpResponseRedirect(reverse('detail_task', args = (task.id,)))		
+	if form.is_valid() :
+		instance = form.save(commit = False)
+		instance.task = task
+		instance.save()
 
-	except(KeyError, SubTask.DoesNotExist):
-		return render(request, 'rememberTheCheese/detail.html/'+str(task.id),{
-			'task': task,
-			'error_message' : "subtask description could'nt be blank",
-			})
+		messages.success(request,'Subtask created successfully')
+
+		return HttpResponseRedirect(reverse('detail_task', args = (task.id,)))
+
+	context = {
+		'form' : form,
+		'task': task,
+	}
+	return render(request, 'rememberTheCheese/detail_task.html', context)		
+		
 
 def delete_subTask(request, subTask_id):
 
@@ -132,15 +183,8 @@ def delete_subTask(request, subTask_id):
 
 	return HttpResponseRedirect(reverse('detail_task', args = (task_id,)))
 
-
-
 def edit(request, id_subtask):
 	passs	
-
-
-
-
-
 
 def get_task(request, task_list_id):
 	task = Task()
@@ -164,13 +208,15 @@ def detail_subTask(request,subTask_id):
 
 def mark_subtask_as_finished(request):
 
-	subtasks = request.POST['subtasks']
-	task_id = request.POST['task_id']
+	if request.method == 'POST':
 
-	for subtask_id in subtasks:
-		subtask = SubTask.objects.get(pk=subtask_id)
-		subtask.finished = 1
-		subtask.save()
+		subtasks = request.POST.getlist('subtasks')
+		task_id = request.POST['task_id']
+
+		for subtask_id in subtasks:
+			subtask = get_object_or_404(SubTask, pk = int(subtask_id))
+			subtask.finished = 1
+			subtask.save()
 
 	return HttpResponseRedirect(reverse('detail_task', args = (task_id,)))
 

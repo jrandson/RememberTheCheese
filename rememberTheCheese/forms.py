@@ -1,10 +1,20 @@
 from django import forms
 
-from rememberTheCheese.models import *
+from rememberTheCheese.models import Task, SubTask
 
-class CreateTask(forms.ModelForm):
+class TaskForm(forms.ModelForm):
+	
 	class Meta:
 		model = Task
 		fields = [
 			"description",			
 		]
+
+class SubTaskForm(forms.ModelForm):
+	
+	class Meta:
+		model = SubTask
+		fields = [
+			"description",			
+		]
+

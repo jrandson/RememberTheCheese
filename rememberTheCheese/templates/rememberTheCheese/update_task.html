@@ -1,13 +1,21 @@
+{% extends "rememberTheCheese/base.html" %}
+
+{% block content %}
+
 <div class="container col-sm-8 col-sm-offset-3">    
 
-        <h2>Update task</h2>
+    <h2>Update task</h2>
 
-        <form action="{% url 'create_task' %}" method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-           
-                
-            <input type="submit" value="Add" />
-        </form>
+    <form action="" method="post">
+        {% csrf_token %}
+
+        {{ form.as_p }}   
+            
+        <input type="submit" value="Add" class="btn btn-primary" />
+    </form>
+
+    </form>
        
-    </div>
+ </div>
+
+{% endblock content %}
