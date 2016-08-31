@@ -4,9 +4,7 @@
 <html>
   <head>
     <title>{% block head_title %}Remember the Cheese {% endblock head_title %}</title>
-        <style type="text/css">
-        {% block style%}{% endblock style%}
-        </style>
+        
         {% include 'rememberTheCheese/base_css.html' %}
 
   </head>
@@ -20,7 +18,6 @@
         <div class="col-md-10 col-md-offset-1">            
           
           {% include "rememberTheCheese/message_display.html" %}
-
 
           {% block content %}{% endblock content %} 
 

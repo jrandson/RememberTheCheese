@@ -29,15 +29,13 @@ def label_date(deadline):
 
 	return deadline
 
-
 class Task(models.Model):
-	description = models.CharField(max_length=500)
+	description = models.CharField(max_length=500, blank = False)
 	deadline = models.DateTimeField('deadline', default=timezone.now()+ datetime.timedelta(days=3))
 	finished = models.IntegerField(default=0)
 	created_at = models.DateTimeField(auto_now_add=True, editable=False)
 	modified_at = models.DateTimeField(auto_now=True, editable=False)
 	closed = models.IntegerField(default = 0)
-
 
 	def __str__(self):
 		return self.description
@@ -76,6 +74,10 @@ class Task(models.Model):
 	def get_pct_finished(self):
 
 		all_tasks = self.subtask_set.all().count()
+
+		if all_tasks == 0:
+			return 0
+
 		finished_tasks = self.subtask_set.filter(finished=1).count()
 
 		return round(100.0*finished_tasks/all_tasks);

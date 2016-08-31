@@ -14,12 +14,11 @@ from .forms import TaskForm, SubTaskForm
 
 # Create your views here.
 
+base_url = 'rememberTheCheese/'
+
 def teste(request):
 
-	response = "teste"
-	task = Task.objects.get(pk=4)
-
-	return HttpResponse(task.get_pct_finished())
+	return HttpResponse('No tasks are available')
 
 def index(request):
 
@@ -34,6 +33,7 @@ def index(request):
 		tasks = taskModel.get_task_inbox()[:10]
 
 	context = {
+
 		'tasks' : tasks,
 		'tasks_inbox' : taskModel.get_task_inbox(),
 		'form' :  TaskForm(request.POST or None)
@@ -41,7 +41,11 @@ def index(request):
 
 	#template = loader.get_template('rememberTheCheese/index.html')
 	#return HttpResponse(template.render(context,request))
-	return render(request, 'rememberTheCheese/index.html', context)
+
+	#return HttpResponse("Welcome")
+	return render(request, base_url+'index.html', context)
+
+
 
 def subtasks_for_today(request):
 	task = Task()
@@ -50,7 +54,7 @@ def subtasks_for_today(request):
 		'subtasks' : subtasks
 	}
 
-	return render(request,'rememberTheCheese/subtasks_for_today.html',context)
+	return render(request,base_url+'tasks_for_today.html',context)
 
 #=================tasks=======================================
 
@@ -67,10 +71,11 @@ def create_task(request):
 		task = Task(description= desc)
 		task.save()
 
-		messages.success(request,'Successfully created')
-		return redirect('index')
+		messages.success(request,'Successfully created')		
+		return redirect('rememberTheCheese:index')
 
-	return render(request, 'rememberTheCheese/create_task.html',context)
+
+	return render(request, base_url+'create_task.html',context)
 
 def update_task(request, task_id=None):
 	
@@ -83,14 +88,14 @@ def update_task(request, task_id=None):
 
 		messages.success(request,'Task updated successfully')
 
-		return redirect('index')	
+		return redirect(base_url+'index')	
 
 	context = {
 		'task' : task,
 		'form' : form
 	}
 
-	return render(request, 'rememberTheCheese/update_task.html',context)
+	return render(request, base_url+'update_task.html',context)
 
 def close_task(request, task_id):	
 
@@ -98,7 +103,7 @@ def close_task(request, task_id):
 	task. closed = 1
 	task.save()
 
-	return redirect('index')
+	return redirect('rememberTheCheese:index')
 
 def detail_task(request, task_id):
 	response = "These are your tasks"
@@ -114,13 +119,13 @@ def detail_task(request, task_id):
 		'unfinished_subtasks' : task.get_unfinished_subtasks()
 	}
 
-	return render(request,'rememberTheCheese/detail_task.html',context)
+	return render(request, base_url+'detail_task.html',context)
 
 def delete_task(request,task_id):
 	task = get_object_or_404(Task, pk=task_id)
 	task.delete()
 
-	return redirect('index')
+	return redirect('rememberTheCheese:index')
 
 def get_tasks_for_today(request):
 
@@ -147,8 +152,7 @@ def undo_finished_subtasks(request):
 
 		return HttpResponseRedirect(reverse('detail_task', args = (task_id,)))
 
-	return redirect('index')
-
+	return redirect('rememberTheCheese:index')
 
 
 #====================subtasks=======================================
@@ -166,7 +170,7 @@ def create_subtask(request, task_id):
 
 		messages.success(request,'Subtask created successfully')
 
-		return HttpResponseRedirect(reverse('detail_task', args = (task.id,)))
+		return HttpResponseRedirect(reverse('rememberTheCheese:detail_task', args = (task.id,)))
 
 	context = {
 		'form' : form,
@@ -181,7 +185,7 @@ def delete_subTask(request, subTask_id):
 	task_id = subtask.task.id
 	subtask.delete()
 
-	return HttpResponseRedirect(reverse('detail_task', args = (task_id,)))
+	return HttpResponseRedirect(reverse('rememberTheCheese:detail_task', args = (task_id,)))
 
 def edit(request, id_subtask):
 	passs	
@@ -218,6 +222,6 @@ def mark_subtask_as_finished(request):
 			subtask.finished = 1
 			subtask.save()
 
-	return HttpResponseRedirect(reverse('detail_task', args = (task_id,)))
+	return HttpResponseRedirect(reverse('rememberTheCheese:detail_task', args = (task_id,)))
 
 #============================================================================

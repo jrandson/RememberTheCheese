@@ -8,13 +8,14 @@ from . import views
 
 from .views import (
      index,
+     teste,
     )
 
-
+app_name = 'rememberTheCheese'
 urlpatterns = [
     #tasks
 
-    url(r'^$', index, name='index'),
+    url(r'^$', views.index, name='index' ),
     url(r'^teste/$', views.teste),
     url(r'^today/$', views.get_tasks_for_today, name='get_task_for_today'),
     url(r'^subtasks_for_today/$', views.subtasks_for_today, name='subtasks_for_today'),
@@ -33,7 +34,7 @@ urlpatterns = [
     #subtasks   
     
     # ex: rememberTheCheese/5/subtasks
-    url(r'^detail_subTask/(?P<subTask_id>[0-9]+)/subTask/$',views.detail_subTask, name='detail_subTask'),
+    url(r'^detail_task/subTask/(?P<subTask_id>[0-9]+)/$',views.detail_subTask, name='detail_subTask'),
     url(r'^create_subtask/(?P<task_id>[0-9]+)/$',views.create_subtask, name='create_subtask'),
 
     url(r'^edit/(?P<subtask_id>[0-9]+)/$',views.edit,name='edit'),

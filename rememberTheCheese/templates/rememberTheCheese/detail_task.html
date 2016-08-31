@@ -6,7 +6,7 @@
 
 	{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
-	<form action="{% url 'create_subtask' task.id %}" method="post">
+	<form action="{% url 'rememberTheCheese:create_subtask' task.id %}" method="post">
 	{% csrf_token %}		
 		{{ form.as_p }}	
 	    <div class="form-group">
@@ -14,7 +14,7 @@
 		</div>
 	</form>
 
-	<form action="{% url 'mark_subtask_as_finished' %}" method="post">
+	<form action="{% url 'rememberTheCheese:mark_subtask_as_finished' %}" method="post">
 		{% csrf_token %}
 		<input type="hidden" name="task_id" value="{{ task.id}}">
 		
@@ -41,9 +41,9 @@
 
 					<div class="row">						
 						<div class="col-xs-6 col-md-4">
-							<a href="{% url 'delete_subTask' subtask.id %}">Delete</a>
+							<a href="{% url 'rememberTheCheese:delete_subTask' subtask.id %}">Delete</a>
 					    	<a href="#">Update</a>
-					    	<a href="{% url 'detail_subTask' subtask.id %}">More Details</a>
+					    	<a href="{% url 'rememberTheCheese:detail_subTask' subtask.id %}">More Details</a>
 						</div>						
 					</div>
 				</div>
@@ -59,7 +59,7 @@
 
 	<br>
 
-	<form action="{% url 'undo_finished_subtasks' %}" method="post">
+	<form action="{% url 'rememberTheCheese:undo_finished_subtasks' %}" method="post">
 	{% csrf_token %}
 		<div class="panel panel-info">
 		<!-- Default panel contents -->

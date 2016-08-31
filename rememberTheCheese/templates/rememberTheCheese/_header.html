@@ -8,7 +8,7 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="{% url 'index' %}">Remember the Cheese</a>
+      <a class="navbar-brand" href="{% url 'rememberTheCheese:index' %}">Remember the Cheese</a>
     </div>
 
     <!-- Collect the nav links, forms, and other content for toggling -->
@@ -19,7 +19,7 @@
         <li><a href="#">All tasks</a></li>        
       </ul>
          
-      <form action="{% url 'index' %}" method="post" class="navbar-form navbar-left" role="search">
+      <form action="{% url 'rememberTheCheese:index' %}" method="post" class="navbar-form navbar-left" role="search">
           {% csrf_token%}
           <input type="text"  name="search" placeholder="Make a search" class="form-control">
           <input type="submit" value="Go" class="btn btn-default">

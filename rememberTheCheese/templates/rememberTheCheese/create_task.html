@@ -4,7 +4,7 @@
 
     {{ block.super }}
 
-<form action="{% url 'create_task' %}" method="post">
+<form action="{% url 'rememberTheCheese:create_task' %}" method="post">
     {% csrf_token %}
     <label >Add new task </label><br />
     {{ form.as_p }}   

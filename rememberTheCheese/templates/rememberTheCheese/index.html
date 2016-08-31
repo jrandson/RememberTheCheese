@@ -9,7 +9,7 @@
     <div class="jumbotron">
         <h1>Remember the Cheese</h1>
         <p>Never forget to do something again</p>
-        <p><a class="btn btn-primary btn-lg" href="{% url 'create_task' %}" role="button">New Task</a></p>
+        <p><a class="btn btn-primary btn-lg" href="{% url 'rememberTheCheese:create_task' %}" role="button">New Task</a></p>
     </div>          
 
     {% if tasks %}
@@ -39,12 +39,23 @@
                                 Action <span class="caret"></span>
                               </button>
                               <ul class="dropdown-menu">
-                                <li><a href="{% url 'detail_task' task.id %}">view</a> </li>
-                                <li><a href="{% url 'update_task' task.id %}">Update</a> </li>
-                                <li><a href="{% url 'update_task' task.id %}">Show finished subtasks</a> </li>
-                                <li><a href="{% url 'close_task' task.id %}">Close task</a> </li>
+                                <li>
+                                    <a href="{% url 'rememberTheCheese:detail_task' task.id %}">view
+                                    </a> 
+                                </li>
+                                <li>
+                                    <a href="{% url 'rememberTheCheese:update_task' task.id %}">Update</a> 
+                                </li>
+                                <li>
+                                    <a href="{% url 'rememberTheCheese:update_task' task.id %}">Show finished subtasks</a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'rememberTheCheese:close_task' task.id %}">Close task</a> 
+                                </li>
                                 <li role="separator" class="divider"></li>
-                                <li><a href="{% url 'delete_task' task.id %}">Delete</a> </li>
+                                <li>
+                                    <a href="{% url 'rememberTheCheese:delete_task' task.id %}">Delete</a> 
+                                </li>
                               </ul>
                             </div>
                         </div>                  
