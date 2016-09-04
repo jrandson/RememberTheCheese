@@ -14,7 +14,6 @@ from .views import (
 app_name = 'rememberTheCheese'
 urlpatterns = [
     #tasks
-
     url(r'^$', views.index, name='index' ),
     url(r'^teste/$', views.teste),
     url(r'^today/$', views.get_tasks_for_today, name='get_task_for_today'),

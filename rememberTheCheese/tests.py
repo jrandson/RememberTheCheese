@@ -114,7 +114,6 @@ class TasksViewsTest(TestCase):
 		
 		self.assertEqual(qtd_tasks_before + 1, qtd_tasks_after)
 
-
 	def test_should_not_create_a_invalid_task(self):
 		
 		qtd_tasks_before = Task.objects.all().count()		
