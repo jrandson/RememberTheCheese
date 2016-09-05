@@ -51,8 +51,7 @@ def today(request):
 	context = {
 		'tasks' : tasks
 	}
-
-	print context
+	
 	return render(request,'rememberTheCheese/today.html',context)
 
 #=================tasks=======================================

@@ -67,9 +67,9 @@ class Task(models.Model):
 	def get_tasks_for_today(self):
 		tasks = Task.objects.filter(finished=0).order_by('-created_at')		
 		tasks_for_today = []
+		
 		for task in tasks:
-			print task.get_deadline()
-			if task.get_deadline() == "Today":
+			if task.is_for_today():
 				tasks_for_today.append(task)
 
 		return tasks_for_today
@@ -103,6 +103,13 @@ class Task(models.Model):
 	def is_for_today(self):	
 		return self.get_deadline() == 'Today'
 
+	def is_late(self):
+		
+		if self.is_for_today():
+			return False
+
+		return self.deadline < timezone.now()
+
 
 class SubTask(models.Model):
 	"""docstring for subtasks"""
@@ -124,7 +131,6 @@ class SubTask(models.Model):
 
 	def get_deadline(self):
 		return label_date(self.deadline)
-
 
 	''' making queries: https://docs.djangoproject.com/en/1.9/topics/db/queries/'''
 

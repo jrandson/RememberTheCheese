@@ -106,6 +106,27 @@ class TaskMethodTest(TestCase):
 		task.save()
 		self.assertEqual(False,task.is_for_today())
 
+	def test_id_for_today(self):
+		
+		task = Task.objects.create(description = 'task', deadline= timezone.now() + datetime.timedelta(days=1))
+		self.assertEqual(False,task.is_for_today())
+
+		task = Task.objects.create(description = 'task', deadline= timezone.now())
+		self.assertEqual(True,task.is_for_today())
+
+		task = Task.objects.create(description = 'task', deadline= timezone.now() - datetime.timedelta(days=1))
+		self.assertEqual(False,task.is_for_today())
+	
+	def test_is_late(self):
+		task = Task.objects.create(description = 'task', deadline= timezone.now() - datetime.timedelta(days=1))
+		self.assertEqual(True, task.is_late())
+
+		task = Task.objects.create(description = 'task', deadline= timezone.now())
+		self.assertEqual(False, task.is_late())
+
+		task = Task.objects.create(description = 'task', deadline= timezone.now() + datetime.timedelta(days=1))
+		self.assertEqual(False, task.is_late())
+
 
 	
 
@@ -172,14 +193,18 @@ class TasksViewsTest(TestCase):
 		self.assertEqual(301,response.status_code)
 
 	def test_task_for_today(self):
-		task = Task.objects.create(description='task 1', deadline = timezone.now() + datetime.timedelta(days=1))
-		task_for_today = task.get_tasks_for_today()
-		response = self.client.get('http://192.168.0.8:8000/rememberTheCheese/today/')
+		task1 = Task.objects.create(description='task 1', deadline = timezone.now() + datetime.timedelta(days=1))
+		task2 = Task.objects.create(description='task 2', deadline = timezone.now() - datetime.timedelta(days=1))
 		
-
+		task_for_today = task1.get_tasks_for_today()
+		
+		response = self.client.get('http://localhost/rememberTheCheese/today/')		
 		self.assertEqual(200, response.status_code)
 		self.assertEqual(0,len(response.context['tasks']))
 		
-		task = Task.objects.create(description='task 1', deadline = timezone.now())		
+		task3 = Task.objects.create(description='task 3', deadline = timezone.now())
+		self.assertEqual(True, task3.is_for_today())
+		
+		response = self.client.get('http://localhost/rememberTheCheese/today/')	
 		self.assertEqual(1, len(response.context['tasks']))
 
