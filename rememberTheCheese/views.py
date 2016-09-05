@@ -30,36 +30,37 @@ def index(request):
 	if 'search' in request.POST.keys() and request.POST['search'] != '':
 		tasks = taskModel.search(request.POST['search'])
 	else:
-		tasks = taskModel.get_task_inbox()[:10]
+		tasks = taskModel.get_tasks_inbox()[:10]
 
 	context = {
 
 		'tasks' : tasks,
-		'tasks_inbox' : taskModel.get_task_inbox(),
+		'tasks_inbox' : taskModel.get_tasks_inbox(),
 		'form' :  TaskForm(request.POST or None)
 	}
 
 	#template = loader.get_template('rememberTheCheese/index.html')
 	#return HttpResponse(template.render(context,request))
-
 	#return HttpResponse("Welcome")
-	return render(request, base_url+'index.html', context)
+	return render(request,'rememberTheCheese/index.html', context)
 
-
-
-def subtasks_for_today(request):
+def today(request):
 	task = Task()
-	subtasks = task.get_subtasks_for_today()
+	tasks = task.get_tasks_for_today()
+
 	context = {
-		'subtasks' : subtasks
+		'tasks' : tasks
 	}
 
-	return render(request,base_url+'tasks_for_today.html',context)
+	print context
+	return render(request,'rememberTheCheese/today.html',context)
 
 #=================tasks=======================================
 
 def create_task(request):
 	
+	#return HttpResponse(request.POST['deadline'])
+
 	form = TaskForm(request.POST or None)
 
 	context = {
@@ -67,13 +68,13 @@ def create_task(request):
 	}
 
 	if form.is_valid():
-		desc = request.POST['description']
-		task = Task(description= desc)
-		task.save()
+		#desc = request.POST['description']
+		instance = form.save(commit=False)
+		instance.save()		
 
-		messages.success(request,'Successfully created')		
+		messages.success(request,'Successfully created')
+		print 'status code', HttpResponse.status_code		
 		return redirect('rememberTheCheese:index')
-
 
 	return render(request, base_url+'create_task.html',context)
 
@@ -88,7 +89,7 @@ def update_task(request, task_id=None):
 
 		messages.success(request,'Task updated successfully')
 
-		return redirect(base_url+'index')	
+		return redirect('rememberTheCheese:index')	
 
 	context = {
 		'task' : task,
@@ -127,16 +128,6 @@ def delete_task(request,task_id):
 
 	return redirect('rememberTheCheese:index')
 
-def get_tasks_for_today(request):
-
-	task = Task()
-
-	context = {
-		'tasks': task.get_tasks_for_today()
-	}
-
-
-	return render(request,'rememberTheCheese/tasks_for_today.html',context)
 
 def undo_finished_subtasks(request):
 

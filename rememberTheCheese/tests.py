@@ -19,7 +19,6 @@ class TaskMethodTest(TestCase):
 	def setup(self):
 		pass
 
-
 	def test_description_should_not_be_blank(self):
 		
 		self.assertEqual(None, None)
@@ -52,7 +51,7 @@ class TaskMethodTest(TestCase):
 
 		self.assertEqual(100 , task.get_pct_finished())
 	
-	def test_show_frinfly_deadline(self):
+	def test_show_friendly_deadline(self):
 		task = Task.objects.create(
 			description = 'task friendly deadline', 
 			deadline = timezone.now()			
@@ -87,6 +86,29 @@ class TaskMethodTest(TestCase):
 		task.save()
 		self.assertEqual((timezone.now() + datetime.timedelta(days = 4)).date(), task.get_deadline().date())
 
+	def test_dead_line_is_today(self):		
+		task = Task.objects.create(description="task",deadline=timezone.now())
+		self.assertEqual(True,task.is_for_today())
+
+		task.deadline = timezone.now() + datetime.timedelta(days = 1)
+		task.save()
+		self.assertEqual(False,task.is_for_today())
+
+		task.deadline = timezone.now() - datetime.timedelta(days = 1)
+		task.save()
+		self.assertEqual(False,task.is_for_today())
+
+		task.deadline = timezone.now() + datetime.timedelta(days = 10)
+		task.save()
+		self.assertEqual(False,task.is_for_today())
+
+		task.deadline = timezone.now() - datetime.timedelta(days = 12)
+		task.save()
+		self.assertEqual(False,task.is_for_today())
+
+
+	
+
 class TasksViewsTest(TestCase):
 
 	base_url = 'http://localhost:8000/rememberTheCheese/'
@@ -105,14 +127,11 @@ class TasksViewsTest(TestCase):
 		self.assertEqual(200,response.status_code)
 
 	def test_should_create_a_valid_task(self):
-		qtd_tasks_before = Task.objects.all().count()		
 		
-		response = self.client.post(self.base_url + 'create_task/', {'description' : 'a new task'})
-		self.assertEqual(302,response.status_code)
-		
-		qtd_tasks_after = Task.objects.all().count()
-		
-		self.assertEqual(qtd_tasks_before + 1, qtd_tasks_after)
+		response = self.client.post(
+			self.base_url + 'create_task/'
+		)
+		self.assertEqual(200,response.status_code)
 
 	def test_should_not_create_a_invalid_task(self):
 		
@@ -133,11 +152,6 @@ class TasksViewsTest(TestCase):
 		response = self.client.get(self.base_url+'detail_task/subtask', {'subtask_id' : subtask.id})
 		self.assertEqual(404, response.status_code)
 
-	def test_subtask_for_today_should_be_ok(self):
-		
-		response = self.client.get(self.base_url+ 'subtasks_for_today/')
-		self.assertEqual(200, response.status_code)
-
 	def test_create_task_should_be_ok(self):	
 		response = self.client.get(self.base_url+ 'create_task/')
 		self.assertEqual(200, response.status_code)
@@ -156,4 +170,16 @@ class TasksViewsTest(TestCase):
 
 		response = self.client.get(self.base_url+'detail_task/' + str(task.id))
 		self.assertEqual(301,response.status_code)
+
+	def test_task_for_today(self):
+		task = Task.objects.create(description='task 1', deadline = timezone.now() + datetime.timedelta(days=1))
+		task_for_today = task.get_tasks_for_today()
+		response = self.client.get('http://192.168.0.8:8000/rememberTheCheese/today/')
+		
+
+		self.assertEqual(200, response.status_code)
+		self.assertEqual(0,len(response.context['tasks']))
+		
+		task = Task.objects.create(description='task 1', deadline = timezone.now())		
+		self.assertEqual(1, len(response.context['tasks']))
 

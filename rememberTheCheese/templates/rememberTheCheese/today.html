@@ -1,6 +1,7 @@
 {% extends 'rememberTheCheese/base.html' %}
 
 {% block content %}
+
 	{% if tasks %}
         <ul>
         {% for task in tasks %}
@@ -9,8 +10,7 @@
 				    <h3 class="panel-title"><strong>{{ task.description }}</strong>
 				    <span class="badge">{{ task.get_qtd_subtasks}} subtasks</span></h3>
 				</div>
-				<div class="panel-body">
-				    
+				<div class="panel-body">				    
 				    <div class="row">
 					    <div class="col-xs-6 col-md-4">
 					        <strong>DDL: </strong>{{task.get_deadline}}
@@ -24,11 +24,11 @@
 				            Action <span class="caret"></span>
 				          </button>
 				          <ul class="dropdown-menu">
-				            <li><a href="{% url 'detail_task' task.id %}">view</a> </li>
-				            <li><a href="{% url 'update_task' task.id %}">Update</a> </li>
-				            <li><a href="{% url 'close_task' task.id %}">Close task</a> </li>
+				            <li><a href="{% url 'rememberTheCheese:detail_task' task.id %}">view</a> </li>
+				            <li><a href="{% url 'rememberTheCheese:update_task' task.id %}">Update</a> </li>
+				            <li><a href="{% url 'rememberTheCheese:close_task' task.id %}">Close task</a> </li>
 				            <li role="separator" class="divider"></li>
-				            <li><a href="{% url 'delete_task' task.id %}">Delete</a> </li>
+				            <li><a href="{% url 'rememberTheCheese:delete_task' task.id %}">Delete</a> </li>
 				          </ul>
 				        </div>
 
@@ -47,7 +47,7 @@
         {% endfor %}
         </ul>
     {% else %}
-        <p>No tasks are available for today.</p>
+        <h3>No tasks are available for today.</h3>
     {% endif %}
 {% endblock content%}
 

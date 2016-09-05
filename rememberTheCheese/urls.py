@@ -16,8 +16,7 @@ urlpatterns = [
     #tasks
     url(r'^$', views.index, name='index' ),
     url(r'^teste/$', views.teste),
-    url(r'^today/$', views.get_tasks_for_today, name='get_task_for_today'),
-    url(r'^subtasks_for_today/$', views.subtasks_for_today, name='subtasks_for_today'),
+    url(r'^today/$', views.today, name='today'),    
 
     #tasks
     url(r'^create_task/$',views.create_task, name='create_task'),

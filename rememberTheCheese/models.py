@@ -46,6 +46,12 @@ class Task(models.Model):
 
 		return subtasks
 
+	def get_created_at(self):
+		return label_date(self.created_at)
+
+	def get_modified_at(self):
+		return label_date(self.modified_at)
+
 	def get_deadline(self):
 		return label_date(self.deadline)
 
@@ -58,13 +64,16 @@ class Task(models.Model):
 	def get_closed_tasks(self):
 		return Task.objects.filter(closed=1).order_by('-modified_at')
 
-	def get_subtasks_for_today(self):
-		query = SubTask.objects.filter(finished=0).order_by('-created_at')
-		subtasks = []
-		for subtask in query:
-			subtasks.append(subtask)
-		#deadline = timezone.now().today()
-		return subtasks
+	def get_tasks_for_today(self):
+		tasks = Task.objects.filter(finished=0).order_by('-created_at')		
+		tasks_for_today = []
+		for task in tasks:
+			print task.get_deadline()
+			if task.get_deadline() == "Today":
+				tasks_for_today.append(task)
+
+		return tasks_for_today
+	
 
 	def search(self, search):
 
@@ -85,23 +94,14 @@ class Task(models.Model):
 	def get_qtd_subtasks(self):
 		return self.subtask_set.all().count()
 
-	def get_task_inbox(self):
+	def get_tasks_inbox(self):
 
 		tasks = Task.objects.filter(closed = 0).order_by('-created_at')
 
 		return tasks
 
-	def get_tasks_for_today(self):
-
-		subtasks = SubTask.objects.filter(finished = 0).order_by('-created_at')
-
-		tasks_for_today = []
-
-		for subtask in subtasks:
-			if subtask.deadline.date() == timezone.now().date() and  not subtask.task in tasks_for_today:
-				tasks_for_today.append(subtask.task)
-
-		return tasks_for_today
+	def is_for_today(self):	
+		return self.get_deadline() == 'Today'
 
 
 class SubTask(models.Model):
@@ -125,7 +125,9 @@ class SubTask(models.Model):
 	def get_deadline(self):
 		return label_date(self.deadline)
 
+
 	''' making queries: https://docs.djangoproject.com/en/1.9/topics/db/queries/'''
+
 
 '''
 Question.objects.all()

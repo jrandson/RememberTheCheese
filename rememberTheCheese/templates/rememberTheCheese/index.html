@@ -10,7 +10,7 @@
         <h1>Remember the Cheese</h1>
         <p>Never forget to do something again</p>
         <p><a class="btn btn-primary btn-lg" href="{% url 'rememberTheCheese:create_task' %}" role="button">New Task</a></p>
-    </div>          
+    </div> 
 
     {% if tasks %}
    
@@ -29,7 +29,7 @@
                             <strong>DDL: </strong>{{task.get_deadline}}
                         </div>
                         <div class="col-xs-6 col-md-6">
-                            Created at: {{ task.created_at }}
+                            Created at: {{ task.get_created_at }}
                         </div>
                         <div class="col-xs-6 col-md-2">
                      
