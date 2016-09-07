@@ -1,0 +1,12 @@
+create syper user admin django:
+
+python manage.py createsuperuser
+
+heroku create myapp --buildpack heroku/python
+
+
+-----------------
+pstgres
+
+sudo -i -u postgres
+psql
