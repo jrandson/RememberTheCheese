@@ -1,3 +1,0 @@
-create syper user admin django:
-
-python manage.py createsuperuser

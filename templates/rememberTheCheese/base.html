@@ -9,10 +9,9 @@
 
   </head>
   <body>
-    
-    {% include "rememberTheCheese/_header.html" %}
-
     <div class="container">
+    
+    {% include "rememberTheCheese/_header.html" %}    
 
       <div class="row">
         <div class="col-md-10 col-md-offset-1">            
@@ -21,16 +20,14 @@
 
           {% block content %}{% endblock content %} 
 
-          {% include "rememberTheCheese/_footer.html" %}
-          
+          {% include "rememberTheCheese/_footer.html" %}          
 
         </div>
       </div>
 
     </div> 
    
-    {% include 'rememberTheCheese/base_script.html' %}
-   
+    {% include 'rememberTheCheese/base_script.html' %}   
     
   </body>
 </html>

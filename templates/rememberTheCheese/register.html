@@ -1,0 +1,16 @@
+{% extends "rememberTheCheese/base.html" %}
+{% block content %}
+{{ block.super }}
+
+<form method="post" action="{% url 'rememberTheCheese:auth_register' %}">
+  {% csrf_token %}
+
+  {% for erro in form.errors %}
+  {{ erro }}
+  {% endfor %}
+
+  {{ form.as_p }} 
+  
+  <button type="submit" class="btn btn-primary">Register</button>
+</form>
+{% endblock content %}

@@ -1,0 +1,30 @@
+{% extends 'rememberTheCheese/base.html' %}
+
+{% block content %}
+
+{{ content.super }}
+
+{% if not reques.user.is_superuser %}
+
+<h2> Users </h2>
+<table class="table table-condensed">
+	<tr>
+		<th> First name</th>
+		<th>Last name</th> 
+		<th>Email</th> 
+		<th>Username</th> 
+		<th>Creted at</th> 
+	</tr>
+  {% for user in users %}
+  	<tr>
+		<td > {{ user.first_name }} </td>
+		<td > {{ user.last_name }} </td>
+		<td > {{ user.email }} </td>
+		<td > {{ user.username }} </td>
+		<td > {{ user.date_joined }} </td>
+	</tr>
+  {% endfor %}
+</table>
+{% endif %}
+
+{% endblock content %}

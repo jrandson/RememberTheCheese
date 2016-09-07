@@ -1,20 +1,20 @@
-from django.test import TestCase
-
-# Create your tests here.
-
 import datetime
 
-from django.utils import timezone
-from django.test import TestCase 
+from django.utils import timezone 
 
 from .models import Task,SubTask
 
 from django.core.urlresolvers import reverse
+
 from django.test import Client
 from django.test.utils import setup_test_environment
+from django.test import TestCase
+
+from .forms import UserForm
+
+from django.contrib.auth.models import User
 
 class TaskMethodTest(TestCase):
-
 
 	def setup(self):
 		pass
@@ -128,8 +128,6 @@ class TaskMethodTest(TestCase):
 		self.assertEqual(False, task.is_late())
 
 
-	
-
 class TasksViewsTest(TestCase):
 
 	base_url = 'http://localhost:8000/rememberTheCheese/'
@@ -207,4 +205,39 @@ class TasksViewsTest(TestCase):
 		
 		response = self.client.get('http://localhost/rememberTheCheese/today/')	
 		self.assertEqual(1, len(response.context['tasks']))
+
+	def test_should_create_user(self):
+		data = {
+			'username' : 'username',
+			"email" : 'user@email.com', 	
+			"password": 'abc@123', 
+			"first_name" : 'foo', 
+			"last_name" : 'bar',
+		}
+
+		form = UserForm({})
+		self.assertEqual(False,form.is_valid())
+		form = UserForm(data)
+		self.assertEqual(True,form.is_valid())
+
+		form.save()
+		self.assertEqual({},form.errors)
+
+		data = {
+			'username' : 'username',
+			"email" : 'user@email.com', 	
+			"password": 'abc@123', 
+			"first_name" : 'foo', 
+			"last_name" : 'bar',
+		}
+
+		form = UserForm({})
+		self.assertEqual(False,form.is_valid())
+		form = UserForm(data)
+		self.assertEqual(False,form.is_valid())
+
+		form.save()
+		self.assertEqual({},form.errors)
+
+		#response = self.client.get(self.base_url+'update_task/' + str(task.id))
 

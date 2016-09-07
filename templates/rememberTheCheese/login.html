@@ -1,0 +1,34 @@
+{% extends 'rememberTheCheese/base.html' %}
+
+{% block content %}
+
+{{ content.super }}
+
+<div class="row">
+	<div class="col-sm-6 col-sm-offset-3">
+		<h1>Login </h1>
+		<form  method="post" action="{% url 'rememberTheCheese:auth_login' %}">
+			{% csrf_token %}
+			<div class="form-group">
+			    <label for="exampleInputEmail1">Email address</label>
+			    <input type="text" class="form-control" id="exampleInputEmail1" placeholder="Email"
+			    name="email" >
+			  </div>
+			  <div class="form-group">
+			    <label >Password</label>
+			    <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password" name="password" >
+			   </div>
+
+			<button class="bth btn-primary">Login</button>
+		</form>		
+	</div>	
+</div>
+<div class="row">
+	<div class="col-sm-6 col-sm-offset-3 text-align-center">
+		<p><a href="">Forgot your password?</a></p>
+		<p><a href="">Not resgitryed</a></p>		
+	</div>
+</div>
+
+
+{% endblock content %}

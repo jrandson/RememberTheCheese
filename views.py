@@ -2,15 +2,22 @@
 
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
-from rememberTheCheese.models import Task,SubTask
 from django.shortcuts import render, get_object_or_404,redirect
 from django.core.urlresolvers import reverse
 from django.views import generic
+
+from rememberTheCheese.models import Task,SubTask
+
 from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 
 from django.utils import timezone
 
-from .forms import TaskForm, SubTaskForm
+from .forms import TaskForm, SubTaskForm, UserForm, ContactForm
+
+
 
 # Create your views here.
 
@@ -20,7 +27,13 @@ def teste(request):
 
 	return HttpResponse('No tasks are available')
 
+#@login_required(redirect_field_name='my_redirect_field', login_url='/accounts/login/')
 def index(request):
+
+	print 'request', request
+	if not request.user.is_authenticated:
+		pass
+
 
 	if request.user.is_authenticated():
 		title = "Hello %s" % (request.user)
@@ -54,14 +67,59 @@ def today(request):
 	
 	return render(request,'rememberTheCheese/today.html',context)
 
-#=================tasks=======================================
+def not_found(request):
+	context = {
 
-def create_task(request):
+	}
+	return render(request,'rememberTheCheese/404.html',context)
+
+def internal_error(request):
+	context = {
+
+	}
+	return render(request,'rememberTheCheese/500.html', context)
+
+def auth_login(request):
 	
+	if request.method == 'POST':
+		username = request.POST['email']
+		password = request.POST['password']
+		
+		user = authenticate(username=username, password=password)
+		
+		if user is not None:
+			login(request, user)
+			return redirect('rememberTheCheese:index')
+		else:
+			return redirect('rememberTheCheese:login')
+
+	return render(request,'rememberTheCheese/login.html',{})
+
+def auth_logout(request):
+	logout(request)
+	return redirect(request,'rememberTheCheese',{})
+
+def auth_register(request):
+	form = UserForm(request.POST or None)
+	context = {
+		'form': form
+	}
+
+	if form.is_valid():
+
+		instance = form.save(commit= False)
+		instance.save()
+		messages.success(request,'User successfully created')
+		
+		return redirect('rememberTheCheese:index')
+
+	return render(request, 'rememberTheCheese/register.html',context)
+
+	
+
+def create_task(request):	
 	#return HttpResponse(request.POST['deadline'])
-
 	form = TaskForm(request.POST or None)
-
 	context = {
 		'form' : form
 	}
@@ -76,6 +134,16 @@ def create_task(request):
 		return redirect('rememberTheCheese:index')
 
 	return render(request, base_url+'create_task.html',context)
+
+def users(request):
+
+	users = User.objects.all()
+
+	context = {
+		'users' : users,
+	}
+
+	return render(request, 'rememberTheCheese/users.html', context)
 
 def update_task(request, task_id=None):
 	
@@ -127,7 +195,6 @@ def delete_task(request,task_id):
 
 	return redirect('rememberTheCheese:index')
 
-
 def undo_finished_subtasks(request):
 
 	if request.method == 'POST' and request.POST.getlist('finished_subtasks'):
@@ -143,9 +210,6 @@ def undo_finished_subtasks(request):
 		return HttpResponseRedirect(reverse('detail_task', args = (task_id,)))
 
 	return redirect('rememberTheCheese:index')
-
-
-#====================subtasks=======================================
 
 def create_subtask(request, task_id):
 	task = get_object_or_404(Task, pk = task_id)
@@ -167,7 +231,6 @@ def create_subtask(request, task_id):
 		'task': task,
 	}
 	return render(request, 'rememberTheCheese/detail_task.html', context)		
-		
 
 def delete_subTask(request, subTask_id):
 

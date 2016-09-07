@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.utils import timezone
 import datetime
+from django.contrib.auth.models import User
 
 import math
 
@@ -132,8 +133,9 @@ class SubTask(models.Model):
 	def get_deadline(self):
 		return label_date(self.deadline)
 
-	''' making queries: https://docs.djangoproject.com/en/1.9/topics/db/queries/'''
 
+
+''' making queries: https://docs.djangoproject.com/en/1.9/topics/db/queries/'''
 
 '''
 Question.objects.all()

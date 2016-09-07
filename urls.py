@@ -16,7 +16,13 @@ urlpatterns = [
     #tasks
     url(r'^$', views.index, name='index' ),
     url(r'^teste/$', views.teste),
-    url(r'^today/$', views.today, name='today'),    
+    url(r'^today/$', views.today, name='today'),
+    url(r'^not_found/$', views.not_found, name='not_found' ),    
+    url(r'^internal_error/$', views.internal_error, name='internal_error'),
+    url(r'^login/$', views.auth_login, name='login'), #auth_views.login
+    url(r'^logout/$', views.auth_logout, name='logout'),
+    url(r'^register/$', views.auth_register, name='register'),
+    url(r'^users/$', views.users,name='users'),
 
     #tasks
     url(r'^create_task/$',views.create_task, name='create_task'),
