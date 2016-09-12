@@ -5,6 +5,7 @@ from django.utils import timezone
 import datetime
 from django.contrib.auth.models import User
 
+
 import math
 
 # Create your models here.
@@ -30,13 +31,32 @@ def label_date(deadline):
 
 	return deadline
 
+class TaskList(models.Model):
+
+	description = models.CharField(max_length=100, null=False)
+	created_at = models.DateTimeField(auto_now_add=True, editable=False)
+	modified_at = models.DateTimeField(auto_now=True, editable=False)
+
+	def get_priority_projects(self):
+		return TaskList.objects.filter(priority=1)[0:3]
+
+	def setTask(self):
+		tasks = Task.objects.all()
+		tasklist = TaskList.objects.get(description='Inbox')
+		for task in tasks:
+			task.tasklist = tasklist
+			task.save()
+
 class Task(models.Model):
-	description = models.CharField(max_length=500, blank = False)
+	description = models.CharField(max_length=500, null=False)
 	deadline = models.DateTimeField('deadline', default=timezone.now()+ datetime.timedelta(days=3))
 	finished = models.IntegerField(default=0)
 	created_at = models.DateTimeField(auto_now_add=True, editable=False)
 	modified_at = models.DateTimeField(auto_now=True, editable=False)
 	closed = models.IntegerField(default = 0)
+	started = models.IntegerField(default = 0)
+	observation = models.TextField(blank = True)
+	tasklist = models.ForeignKey(TaskList, on_delete = models.CASCADE)
 
 	def __str__(self):
 		return self.description
@@ -74,6 +94,10 @@ class Task(models.Model):
 				tasks_for_today.append(task)
 
 		return tasks_for_today
+
+	def group_task_by_tasklist(self,tasks):
+		pass
+
 	
 
 	def search(self, search):
@@ -111,11 +135,15 @@ class Task(models.Model):
 
 		return self.deadline < timezone.now()
 
+	def get_started_task(self):
+		return Task.objects.filter(started=1, finished = 0)
+
+	
 
 class SubTask(models.Model):
 	"""docstring for subtasks"""
 	task = models.ForeignKey(Task, on_delete = models.CASCADE)
-	description = models.CharField(max_length=100)
+	description = models.CharField(max_length=100, null=False)
 	deadline = models.DateTimeField('deadline', default=timezone.now() + datetime.timedelta(days=3))
 	finished = models.IntegerField(default=0)
 	created_at = models.DateTimeField(auto_now_add=True, editable=False)
@@ -132,6 +160,8 @@ class SubTask(models.Model):
 
 	def get_deadline(self):
 		return label_date(self.deadline)
+
+
 
 
 

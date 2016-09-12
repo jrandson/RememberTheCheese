@@ -1,6 +1,6 @@
 from django import forms
 
-from rememberTheCheese.models import Task, SubTask
+from rememberTheCheese.models import Task, SubTask, TaskList
 from django.contrib.auth.models import User
 
 class TaskForm(forms.ModelForm):
@@ -20,6 +20,15 @@ class SubTaskForm(forms.ModelForm):
 			"description",	
 			"deadline",
 		]
+
+class TaskListForm(forms.ModelForm):
+	
+	class Meta:
+		model = TaskList
+		fields = [
+			"description",	
+		]
+
 class UserForm(forms.ModelForm):
 
 	class Meta:

@@ -8,15 +8,16 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="{% url 'rememberTheCheese:index' %}">Remember the Cheese</a>
+      <a class="navbar-brand" href="{% url 'rememberTheCheese:dashboard' %}">Remember the Cheese</a>
     </div>
 
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
         <li class="active"><a href="{% url 'rememberTheCheese:today' %}">Tasks for today <span class="sr-only">(current)</span></a></li>
-        <li><a href="#">Priority projects</a></li>
-        <li><a href="#">All tasks</a></li>        
+        <li><a href="#">Started Tasks</a></li>
+        <li><a href="{% url 'rememberTheCheese:create_task' %}">New Task</a></li> 
+        <li><a href="{% url 'rememberTheCheese:create_tasklist' %}">New Task list</a></li>        
       </ul>
          
       <form action="{% url 'rememberTheCheese:index' %}" method="post" class="navbar-form navbar-left" role="search">

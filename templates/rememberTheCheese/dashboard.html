@@ -1,0 +1,86 @@
+{% extends "rememberTheCheese/base.html" %}
+{% block head_title %} {{ head_title }} | {{ block.super }} {% endblock head_title %}
+
+{% block tasklists %}
+
+{% include "rememberTheCheese/tasklist_nav.html" %}  
+
+{% endblock tasklists %}
+
+{% block content %}    
+    
+    {{ block.super }}
+
+    <!-- Deemphasize a button by making it look like a link while maintaining button behavior -->
+    {% if tasklist %}
+        <div class="row">
+           <a href="{% url 'rememberTheCheese:create_task' 1 %}"></a>
+        </div>
+    {% endif %}
+    
+     {% if tasks %}        
+        {% for task in tasks %}            
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><strong>{{ task.description }}</strong>
+                    
+                    <span class="badge">{{ task.get_qtd_subtasks}} subtasks</span></h3>
+                </div>
+                <div class="panel-body">
+                    
+                    <div class="row">
+                        <div class="col-xs-6 col-md-4">
+                            <strong>DDL: </strong>
+                            <label class="label {% if task.is_late %} label-danger {% else %}label-default{% endif %}">
+                            {{task.get_deadline}}</label>
+                        </div>
+                        <div class="col-xs-6 col-md-6">
+                            Created at: {{ task.get_created_at }}
+                        </div>
+                        <div class="col-xs-6 col-md-2">
+                     
+                            <!-- Single button -->
+                            <div class="btn-group">
+                              <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Action <span class="caret"></span>
+                              </button>
+                              <ul class="dropdown-menu">
+                                <li>
+                                    <a href="{% url 'rememberTheCheese:detail_task' task.id %}">view
+                                    </a> 
+                                </li>
+                                <li>
+                                    <a href="{% url 'rememberTheCheese:update_task' task.id %}">Update</a> 
+                                </li>
+                                <li>
+                                    <a href="{% url 'rememberTheCheese:update_task' task.id %}">Show finished subtasks</a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'rememberTheCheese:close_task' task.id %}">Close task</a> 
+                                </li>
+                                <li role="separator" class="divider"></li>
+                                <li>
+                                    <a href="{% url 'rememberTheCheese:delete_task' task.id %}">Delete</a> 
+                                </li>
+                              </ul>
+                            </div>
+                        </div>                  
+                    </div>
+
+                    {{task.get_pct_finished}}% finished 
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100" style="width: {{task.get_pct_finished}}%"><span class="sr-only">40% Complete (success)</span>
+                        </div>
+                    </div> 
+                </div>
+            </div>
+       
+        {% endfor %}
+       
+    {% else %}
+        <p>No tasks are available.</p>
+    {% endif %}
+
+{% endblock content %}
+

@@ -6,7 +6,7 @@ from django.shortcuts import render, get_object_or_404,redirect
 from django.core.urlresolvers import reverse
 from django.views import generic
 
-from rememberTheCheese.models import Task,SubTask
+from rememberTheCheese.models import Task,SubTask,TaskList
 
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
@@ -15,7 +15,7 @@ from django.contrib.auth.models import User
 
 from django.utils import timezone
 
-from .forms import TaskForm, SubTaskForm, UserForm, ContactForm
+from .forms import TaskForm, SubTaskForm, UserForm, ContactForm, TaskListForm
 
 
 
@@ -24,7 +24,6 @@ from .forms import TaskForm, SubTaskForm, UserForm, ContactForm
 base_url = 'rememberTheCheese/'
 
 def teste(request):
-
 	return HttpResponse('No tasks are available')
 
 #@login_required(redirect_field_name='my_redirect_field', login_url='/accounts/login/')
@@ -57,15 +56,34 @@ def index(request):
 	#return HttpResponse("Welcome")
 	return render(request,'rememberTheCheese/index.html', context)
 
-def today(request):
-	task = Task()
-	tasks = task.get_tasks_for_today()
+#@login_required(redirect_field_name='my_redirect_field', login_url='/accounts/login/')
+def dashboard(request):
+
+	print 'request', request
+	if not request.user.is_authenticated:
+		pass
+
+
+	if request.user.is_authenticated():
+		title = "Hello %s" % (request.user)
+
+	taskModel = Task()
+
+	if 'search' in request.POST.keys() and request.POST['search'] != '':
+		tasks = taskModel.search(request.POST['search'])
+	else:
+		tasks = taskModel.get_tasks_inbox()[:10]
 
 	context = {
-		'tasks' : tasks
+		'tasks' : tasks,
+		'head_title' : 'dashboard',
+		'tasklists' : TaskList.objects.all(),
 	}
-	
-	return render(request,'rememberTheCheese/today.html',context)
+
+	#template = loader.get_template('rememberTheCheese/index.html')
+	#return HttpResponse(template.render(context,request))
+	#return HttpResponse("Welcome")
+	return render(request,'rememberTheCheese/dashboard.html', context)
 
 def not_found(request):
 	context = {
@@ -79,7 +97,7 @@ def internal_error(request):
 	}
 	return render(request,'rememberTheCheese/500.html', context)
 
-def auth_login(request):
+def login(request):
 	
 	if request.method == 'POST':
 		username = request.POST['email']
@@ -95,11 +113,11 @@ def auth_login(request):
 
 	return render(request,'rememberTheCheese/login.html',{})
 
-def auth_logout(request):
+def logout(request):
 	logout(request)
 	return redirect(request,'rememberTheCheese',{})
 
-def auth_register(request):
+def register(request):
 	form = UserForm(request.POST or None)
 	context = {
 		'form': form
@@ -115,9 +133,7 @@ def auth_register(request):
 
 	return render(request, 'rememberTheCheese/register.html',context)
 
-	
-
-def create_task(request):	
+def create_task(request, tasklist_id):	
 	#return HttpResponse(request.POST['deadline'])
 	form = TaskForm(request.POST or None)
 	context = {
@@ -277,4 +293,59 @@ def mark_subtask_as_finished(request):
 
 	return HttpResponseRedirect(reverse('rememberTheCheese:detail_task', args = (task_id,)))
 
+def inbox(request):
+	task_inbox = get_object_or_404(TaskList,description='Inbox')
+	tasks = Task.objects.filter(tasklist = task_inbox, finished = 0)
+
+	context = {
+		'tasks' : tasks,
+		'head_title' : 'dashboard',
+		'tasklists' : TaskList.objects.all(),
+		'tasklist' : task_inbox,
+	}
+
+	return render(request,'rememberTheCheese/dashboard.html',context)
+
+def today(request):
+	task = Task()
+	tasks = task.get_tasks_for_today()
+
+	context = {
+		'tasks' : tasks,
+		'head_title' : 'Tasks for today ',
+		'tasklists' : TaskList.objects.all(),
+	}
+	
+	return render(request,'rememberTheCheese/dashboard.html',context)
+
+def thisweek(request):
+	task_inbox = get_object_or_404(TaskList,description='Inbox')
+	tasks = Task.objects.filter(tasklist = task_inbox, finished = 0)
+
+	context = {
+		'tasks' : [],
+		'head_title' : 'Tasks for this week ',
+		'tasklists' : TaskList.objects.all(),
+	}
+
+	return render(request,'rememberTheCheese/dashboard.html',context)
+
 #============================================================================
+
+def create_tasklist(request):
+	#return HttpResponse(request.POST['deadline'])
+	form = TaskListForm(request.POST or None)
+	context = {
+		'form' : form
+	}
+
+	if form.is_valid():
+		#desc = request.POST['description']
+		instance = form.save(commit=False)
+		instance.save()		
+
+		messages.success(request,'Task list successfully created')
+		print 'status code', HttpResponse.status_code		
+		return redirect('rememberTheCheese:index')
+
+	return render(request, base_url+'create_tasklist.html',context)

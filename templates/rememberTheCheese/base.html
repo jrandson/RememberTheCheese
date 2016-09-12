@@ -11,14 +11,42 @@
   <body>
     <div class="container">
     
-    {% include "rememberTheCheese/_header.html" %}    
+    {% include "rememberTheCheese/_header.html" %}       
 
       <div class="row">
-        <div class="col-md-10 col-md-offset-1">            
+        
+        <div class="col-sm-2  blog-sidebar">
+          <div class="sidebar-module sidebar-module-inset">
+            
+            <!-- Default panel contents -->
+            <div class="sidebar-offcanvas" id="sidebar">
+              <div class="list-group">
+                <a href="{% url 'rememberTheCheese:inbox' %}" class="list-group-item">
+                  <span class='glyphicon glyphicon-inbox'> Inbox </span>
+                </a>
+                <a href="{% url 'rememberTheCheese:today' %}" class="list-group-item">
+                  <span class='glyphicon glyphicon-time'> Today</span> 
+                </a>
+                <a href="{% url 'rememberTheCheese:thisweek' %}" class="list-group-item">
+                  <span class='glyphicon glyphicon-calendar'> This week </span>
+                </a>
+                {% block tasklists %}
+
+                {% endblock tasklists %}
+              </div>
+            </div><!--/.sidebar-offcanvas-->              
+            
+          </div> 
+        </div>
+
+        <!--  main content-->
+        <div  class="col-sm-10 blog-main">            
           
           {% include "rememberTheCheese/message_display.html" %}
 
-          {% block content %}{% endblock content %} 
+          {% block content %}     
+     
+          {% endblock content %} 
 
           {% include "rememberTheCheese/_footer.html" %}          
 

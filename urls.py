@@ -15,17 +15,21 @@ app_name = 'rememberTheCheese'
 urlpatterns = [
     #tasks
     url(r'^$', views.index, name='index' ),
+    url(r'^dashboard/$', views.dashboard, name='dashboard' ),
     url(r'^teste/$', views.teste),
-    url(r'^today/$', views.today, name='today'),
+    
     url(r'^not_found/$', views.not_found, name='not_found' ),    
     url(r'^internal_error/$', views.internal_error, name='internal_error'),
     url(r'^login/$', views.auth_login, name='login'), #auth_views.login
     url(r'^logout/$', views.auth_logout, name='logout'),
     url(r'^register/$', views.auth_register, name='register'),
     url(r'^users/$', views.users,name='users'),
+    url(r'^inbox/$',views.inbox, name='inbox'),
+    url(r'^today/$', views.today, name='today'),
+    url(r'^thisweek/$', views.thisweek, name='thisweek'),
 
     #tasks
-    url(r'^create_task/$',views.create_task, name='create_task'),
+    url(r'^create_task/(?P<tasklist_id>[0-9]+)/$',views.create_task, name='create_task'),
     url(r'^update_task/(?P<task_id>[0-9]+)/$',views.update_task, name='update_task'),
     url(r'^detail_task/(?P<task_id>[0-9]+)/delete_task/$',views.delete_task,name='delete_task'),    
     url(r'^close_task/(?P<task_id>[0-9]+)/$',views.close_task,name='close_task'),
@@ -34,6 +38,8 @@ urlpatterns = [
     url(r'^detail_task/(?P<task_id>[0-9]+)/$', views.detail_task, name='detail_task'),  
     url(r'^undo_finished_subtasks/$', views.undo_finished_subtasks, name='undo_finished_subtasks'), 
 
+    #task list
+    url(r'^create_tasklist/$',views.create_tasklist,name='create_tasklist'),
 
     #subtasks   
     
